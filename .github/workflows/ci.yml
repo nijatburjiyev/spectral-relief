@@ -1,0 +1,29 @@
+name: macOS build and test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_OSX_ARCHITECTURES=arm64
+
+      - name: Build plug-in and tests
+        run: cmake --build build --target SpectralReliefTests SpectralRelief_VST3 -j3
+
+      - name: Run tests and public-release audit
+        run: ctest --test-dir build --output-on-failure

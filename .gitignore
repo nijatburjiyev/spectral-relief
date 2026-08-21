@@ -1,0 +1,30 @@
+.superpowers/
+
+# Build products
+build/
+build-*/
+cmake-build-*/
+CMakeUserPresets.json
+
+# macOS
+.DS_Store
+
+# Editors and local tooling
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.mobileprovision
+
+# Developer-only references and generated diagnostics
+tmp/
+docs/*.pdf
+*.log
