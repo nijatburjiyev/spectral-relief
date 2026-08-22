@@ -15,11 +15,14 @@ if (NOT IS_DIRECTORY "${STAGING_ROOT}/${PACKAGE_NAME}")
 endif()
 
 file(GLOB_RECURSE archive_paths
-    LIST_DIRECTORIES true
+    LIST_DIRECTORIES false
     RELATIVE "${STAGING_ROOT}"
     "${STAGING_ROOT}/${PACKAGE_NAME}/*")
 list(SORT archive_paths)
-list(PREPEND archive_paths "${PACKAGE_NAME}")
+
+if (archive_paths STREQUAL "")
+    message(FATAL_ERROR "Package staging directory is empty")
+endif()
 
 file(ARCHIVE_CREATE
     OUTPUT "${OUTPUT_FILE}"
