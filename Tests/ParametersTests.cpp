@@ -5,6 +5,8 @@
 
 #include <juce_core/juce_core.h>
 
+#include <memory>
+
 namespace
 {
 class ParametersTests final : public juce::UnitTest
@@ -32,8 +34,8 @@ public:
         expectEquals (getFrequencyRangeProfile (FrequencyRange::high).minimumHz, 2000.0);
 
         beginTest ("display parameters have detail-preserving defaults");
-        SpectralReliefAudioProcessor processor;
-        auto& state = processor.getParameterState();
+        auto processor = std::make_unique<SpectralReliefAudioProcessor>();
+        auto& state = processor->getParameterState();
         expectEquals (juce::String (ParameterIDs::curve), juce::String ("curve"));
         expectWithinAbsoluteError (state.getRawParameterValue (ParameterIDs::height)->load(), 1.4f, 0.0001f);
         expectWithinAbsoluteError (state.getRawParameterValue (ParameterIDs::curve)->load(), 0.35f, 0.0001f);
@@ -91,12 +93,12 @@ public:
         view2d->setValueNotifyingHost (1.0f);
 
         juce::MemoryBlock saved;
-        processor.getStateInformation (saved);
+        processor->getStateInformation (saved);
         expect (saved.getSize() > 0);
 
-        SpectralReliefAudioProcessor restored;
-        restored.setStateInformation (saved.getData(), static_cast<int> (saved.getSize()));
-        auto& restoredState = restored.getParameterState();
+        auto restored = std::make_unique<SpectralReliefAudioProcessor>();
+        restored->setStateInformation (saved.getData(), static_cast<int> (saved.getSize()));
+        auto& restoredState = restored->getParameterState();
         expectWithinAbsoluteError (restoredState.getRawParameterValue (ParameterIDs::height)->load(), 2.25f, 0.001f);
         expectWithinAbsoluteError (restoredState.getRawParameterValue (ParameterIDs::curve)->load(), 0.8f, 0.001f);
         expectWithinAbsoluteError (restoredState.getRawParameterValue (ParameterIDs::depth)->load(), 1.7f, 0.001f);
@@ -130,18 +132,18 @@ public:
         juce::MemoryBlock legacyBlock;
         if (const auto legacyXml = legacyTree.createXml())
             juce::AudioProcessor::copyXmlToBinary (*legacyXml, legacyBlock);
-        SpectralReliefAudioProcessor migrated;
-        migrated.setStateInformation (legacyBlock.getData(), static_cast<int> (legacyBlock.getSize()));
+        auto migrated = std::make_unique<SpectralReliefAudioProcessor>();
+        migrated->setStateInformation (legacyBlock.getData(), static_cast<int> (legacyBlock.getSize()));
         expectWithinAbsoluteError (
-            migrated.getParameterState().getRawParameterValue (ParameterIDs::resolution)->load(),
+            migrated->getParameterState().getRawParameterValue (ParameterIDs::resolution)->load(),
             1.0f, 0.001f);
 
         beginTest ("malformed state leaves defaults intact");
         constexpr char malformed[] = "not plugin state";
-        SpectralReliefAudioProcessor malformedTarget;
-        malformedTarget.setStateInformation (malformed, static_cast<int> (sizeof (malformed)));
+        auto malformedTarget = std::make_unique<SpectralReliefAudioProcessor>();
+        malformedTarget->setStateInformation (malformed, static_cast<int> (sizeof (malformed)));
         expectWithinAbsoluteError (
-            malformedTarget.getParameterState().getRawParameterValue (ParameterIDs::height)->load(),
+            malformedTarget->getParameterState().getRawParameterValue (ParameterIDs::height)->load(),
             1.4f,
             0.0001f);
     }
