@@ -1,15 +1,15 @@
 # Spectral Relief
 
 Spectral Relief is a **free, open-source VST3 audio spectrogram plugin** for
-macOS. It turns the audio passing through an Ableton Live track into a detailed
-2D heatmap or a controllable 3D spectral surface without changing the audio or
-adding plug-in latency.
+macOS and Windows. It turns the audio passing through an Ableton Live track
+into a detailed 2D heatmap or a controllable 3D spectral surface without
+changing the audio or adding plug-in latency.
 
 Developed by **Nijat Burjiyev**.
 
-> **Project status:** early public alpha. Spectral Relief is tested on Apple
-> Silicon and Ableton Live 12. Feedback and reproducible bug reports are
-> welcome.
+> **Project status:** early public alpha. Spectral Relief has been manually
+> tested on Apple Silicon and Ableton Live 12; Windows builds receive automated
+> build and test coverage. Feedback and reproducible bug reports are welcome.
 
 ## Demo
 
@@ -48,9 +48,21 @@ Developed by **Nijat Burjiyev**.
 
 Every control affects visualization only.
 
-## Requirements
+## Download
 
-- macOS on Apple Silicon
+Download the latest ready-made plug-in from
+[GitHub Releases](https://github.com/nijatburjiyev/spectral-relief/releases/latest):
+
+- **macOS universal** — native Apple Silicon and Intel support.
+- **Windows x64** — for 64-bit Ableton Live and other VST3 hosts.
+
+No compiler or JUCE installation is required. These early binaries are not
+code-signed or notarized, so macOS requires a one-time quarantine-removal step.
+Follow the [macOS and Windows installation guide](docs/INSTALLATION.md).
+
+## Requirements for building from source
+
+- macOS or 64-bit Windows
 - Apple Command Line Tools
 - CMake 3.25 or newer
 - Git
@@ -62,7 +74,10 @@ Install CMake with Homebrew if needed:
 brew install cmake
 ```
 
-## Build and test
+On Windows, use Visual Studio 2022 with the **Desktop development with C++**
+workload instead of Apple Command Line Tools.
+
+## Build and test on macOS
 
 JUCE 8.0.15 is fetched automatically at its pinned commit.
 
@@ -82,12 +97,9 @@ build-release/SpectralRelief_artefacts/Release/VST3/Spectral Relief.vst3
 
 ## Install in Ableton Live
 
-1. Quit Ableton Live before replacing an existing build.
-2. Copy `Spectral Relief.vst3` to
-   `~/Library/Audio/Plug-Ins/VST3/`.
-3. Open Live and enable VST3 system folders under Settings → Plug-Ins.
-4. Rescan plug-ins and insert **Spectral Relief** after an instrument or audio
-   clip.
+Use the ready-made release and follow
+[docs/INSTALLATION.md](docs/INSTALLATION.md). It covers both operating systems,
+the unsigned macOS security step, checksum verification, and Ableton rescanning.
 
 For a thorough manual check, follow the
 [Ableton smoke test](docs/testing/ableton-smoke-test.md).

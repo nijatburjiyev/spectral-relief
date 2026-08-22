@@ -109,6 +109,12 @@ target_link_libraries(SpectralReliefTests PRIVATE
 
 add_test(NAME SpectralReliefTests COMMAND SpectralReliefTests)
 add_test(
+    NAME PackageReleaseTest
+    COMMAND ${CMAKE_COMMAND}
+        -DREPOSITORY_ROOT=${CMAKE_CURRENT_SOURCE_DIR}
+        -DTEST_ROOT=${CMAKE_CURRENT_BINARY_DIR}/package-release-test
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/Tests/PackageReleaseTest.cmake)
+add_test(
     NAME PublicReleaseAudit
     COMMAND ${CMAKE_COMMAND}
         -DREPOSITORY_ROOT=${CMAKE_CURRENT_SOURCE_DIR}

@@ -1,7 +1,9 @@
-name: macOS build and test
+name: Build and test
 
 on:
   push:
+    branches:
+      - "**"
   pull_request:
 
 permissions:
@@ -9,21 +11,38 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-15
-    timeout-minutes: 30
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS Apple Silicon
+            os: macos-15
+          - name: Windows x64
+            os: windows-2025
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Configure
+      - name: Configure macOS
+        if: runner.os == 'macOS'
         run: >-
           cmake -S . -B build
           -DCMAKE_BUILD_TYPE=Release
           -DCMAKE_OSX_ARCHITECTURES=arm64
 
+      - name: Configure Windows
+        if: runner.os == 'Windows'
+        run: cmake -S . -B build -A x64
+
       - name: Build plug-in and tests
-        run: cmake --build build --target SpectralReliefTests SpectralRelief_VST3 -j3
+        run: >-
+          cmake --build build --config Release
+          --target SpectralReliefTests SpectralRelief_VST3
+          --parallel 3
 
       - name: Run tests and public-release audit
-        run: ctest --test-dir build --output-on-failure
+        run: ctest --test-dir build -C Release --output-on-failure

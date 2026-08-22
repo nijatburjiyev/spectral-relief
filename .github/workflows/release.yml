@@ -1,0 +1,118 @@
+name: Release binaries
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version label used for validation-only archives
+        required: true
+        default: dev
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 50
+    env:
+      PACKAGE_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macOS-universal
+            os: macos-15
+          - platform: Windows-x64
+            os: windows-2025
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure macOS universal
+        if: runner.os == 'macOS'
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Release
+          '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64'
+
+      - name: Configure Windows x64
+        if: runner.os == 'Windows'
+        run: cmake -S . -B build -A x64
+
+      - name: Build plug-in and tests
+        run: >-
+          cmake --build build --config Release
+          --target SpectralReliefTests SpectralRelief_VST3
+          --parallel 3
+
+      - name: Run tests and public-release audit
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Verify universal macOS binary
+        if: runner.os == 'macOS'
+        run: >-
+          lipo -info
+          "build/SpectralRelief_artefacts/Release/VST3/Spectral Relief.vst3/Contents/MacOS/Spectral Relief"
+
+      - name: Package release archive
+        run: >-
+          cmake
+          "-DREPOSITORY_ROOT=${{ github.workspace }}"
+          "-DPLUGIN_DIR=${{ github.workspace }}/build/SpectralRelief_artefacts/Release/VST3/Spectral Relief.vst3"
+          "-DINSTALLATION_FILE=${{ github.workspace }}/docs/INSTALLATION.md"
+          "-DOUTPUT_FILE=${{ runner.temp }}/Spectral-Relief-${{ env.PACKAGE_VERSION }}-${{ matrix.platform }}.zip"
+          "-DPACKAGE_VERSION=${{ env.PACKAGE_VERSION }}"
+          "-DPLATFORM_LABEL=${{ matrix.platform }}"
+          -P "${{ github.workspace }}/cmake/PackageRelease.cmake"
+
+      - name: Upload release archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: Spectral-Relief-${{ matrix.platform }}
+          path: ${{ runner.temp }}/Spectral-Relief-*-${{ matrix.platform }}.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download release archives
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Verify assets and generate checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "dist/Spectral-Relief-${GITHUB_REF_NAME}-macOS-universal.zip"
+          test -f "dist/Spectral-Relief-${GITHUB_REF_NAME}-Windows-x64.zip"
+          cd dist
+          sha256sum ./*.zip > SHA256SUMS.txt
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "${GITHUB_REF_NAME}"
+          dist/Spectral-Relief-*.zip
+          dist/SHA256SUMS.txt
+          --repo "${GITHUB_REPOSITORY}"
+          --title "Spectral Relief ${GITHUB_REF_NAME}"
+          --generate-notes
+          --prerelease
+          --verify-tag
