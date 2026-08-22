@@ -1,9 +1,23 @@
 #include <juce_events/juce_events.h>
 
+#include <iostream>
+
+namespace
+{
+class ConsoleUnitTestRunner final : public juce::UnitTestRunner
+{
+protected:
+    void logMessage (const juce::String& message) override
+    {
+        std::cout << message << std::endl;
+    }
+};
+} // namespace
+
 int main()
 {
     juce::ScopedJuceInitialiser_GUI initialiseGui;
-    juce::UnitTestRunner runner;
+    ConsoleUnitTestRunner runner;
     runner.setAssertOnFailure (false);
     runner.runAllTests();
 
