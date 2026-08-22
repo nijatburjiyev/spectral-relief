@@ -1,86 +1,98 @@
 # Spectral Relief
 
-Spectral Relief is a **free, open-source VST3 audio spectrogram plugin** for
-macOS and Windows. It turns the audio passing through an Ableton Live track
-into a detailed 2D heatmap or a controllable 3D spectral surface without
-changing the audio or adding plug-in latency.
+Spectral Relief is a free, open-source VST3 audio spectrogram plugin for macOS
+and Windows. It shows the sound playing through your track as a detailed 2D
+image or a 3D surface. It does not change the sound and adds no plugin latency.
 
-Developed by **Nijat Burjiyev**.
+> **Project status:** This is an early public version. It has been manually
+> tested with Ableton Live 12 on an Apple Silicon Mac. The macOS and Windows
+> versions are also built and tested automatically on GitHub.
 
-> **Project status:** early public alpha. Spectral Relief has been manually
-> tested on Apple Silicon and Ableton Live 12; Windows builds receive automated
-> build and test coverage. Feedback and reproducible bug reports are welcome.
+## Download — no building required
+
+### [Download Spectral Relief from GitHub Releases](https://github.com/nijatburjiyev/spectral-relief/releases)
+
+On the release page:
+
+1. Open the newest release.
+2. Find the **Assets** section.
+3. Download the correct plug-in ZIP:
+   - **Mac:** `Spectral-Relief-...-macOS-universal.zip`
+   - **Windows:** `Spectral-Relief-...-Windows-x64.zip`
+4. Unzip the downloaded file.
+5. Follow the [simple installation guide](docs/INSTALLATION.md).
+
+Do not download GitHub's automatic **Source code** ZIP if you only want to use
+the plug-in. That download contains the project code, not the ready-made
+plug-in.
+
+The Mac version supports both Apple Silicon and Intel Macs. The Windows
+version supports 64-bit Windows and 64-bit VST3 hosts such as Ableton Live.
+
+The downloads are not commercially signed. macOS requires one extra security
+step the first time you install the plug-in. Windows may show a security
+warning. The [installation guide](docs/INSTALLATION.md) explains what to do.
 
 ## Demo
 
-![Spectral Relief visualizing audio as a 3D spectral surface](docs/assets/spectral-relief-demo.gif)
+![Spectral Relief showing audio as a 3D surface](docs/assets/spectral-relief-demo.gif)
 
-## Highlights
+## What it can show
 
-- Transparent VST3 audio effect: analysis never modifies track audio.
-- Logarithmic frequency axis aligned with human pitch perception.
-- Calibrated, unweighted dBFS levels with no hidden loudness compensation.
-- Normal, High, and Ultra analysis modes with up to an 8192-point FFT and
-  1024 logarithmic bands.
-- Full, Low, Mid, and High frequency-range views.
-- Orthographic 2D heatmap and camera-controlled 3D relief modes.
-- Fixed-size audio queues, bounded analyzer memory, and a circular GPU history
-  texture designed for real-time use.
-- Independent perceptual power averaging and display smoothing controls.
+- A detailed 2D spectrogram or 3D mountain-like view
+- Frequencies arranged in a way that better matches human hearing
+- Accurate, unweighted dBFS loudness levels
+- Up to 1024 logarithmic frequency bands
+- Full, Low, Mid, and High frequency views
+- Two to eight seconds of visible audio history
+- Optional averaging and visual smoothing
+- A top-down view and a freely adjustable 3D camera
+
+All controls change only the picture. They do not change your audio.
 
 ## Controls
 
-| Control | Purpose |
+| Control | What it does |
 | --- | --- |
-| Height | Changes spectral mountain elevation. |
-| Lens | Applies a radial fisheye projection around a stable optical centre. |
-| Depth | Expands or compresses the visible history axis. |
-| Tilt / Orbit | Positions the 3D camera, including a true top-down view. |
-| Zoom | Changes framing without changing analysis data. |
-| Contrast | Separates quiet and loud colour detail without changing geometry. |
-| Smooth | Applies display-only temporal smoothing. Zero preserves every analyzed row. |
-| Average | Integrates each band's linear power from Off to 1000 ms without mixing frequencies. |
-| History | Selects 2–8 seconds of visible history. |
-| View | Switches between 3D relief and an exact 2D heatmap. |
-| Resolution | Selects Normal, High, or Ultra analysis. |
-| Range | Selects Full, Low, Mid, or High frequency coverage. |
-| Hold / Reset | Freezes the display or clears its visual and averaging history. |
+| Height | Makes the frequency mountains taller or shorter. |
+| Lens | Adds a round fisheye-style view. |
+| Depth | Changes how much space the audio history uses. |
+| Tilt / Orbit | Moves the 3D camera, including a top-down view. |
+| Zoom | Moves the view closer or farther away. |
+| Contrast | Makes quiet and loud areas easier to tell apart. It does not change mountain height. |
+| Smooth | Smooths the picture over time. Set it to zero to keep every analyzed row. |
+| Average | Averages loudness for up to 1000 ms without mixing nearby frequencies. |
+| History | Shows between two and eight seconds of audio. |
+| View | Switches between the 3D surface and the exact 2D spectrogram. |
+| Resolution | Selects Normal, High, or Ultra detail. |
+| Range | Selects Full, Low, Mid, or High frequencies. |
+| Hold / Reset | Freezes the picture or clears its history. |
 
-Every control affects visualization only.
+## Install in Ableton Live
 
-## Download
+Use the [macOS and Windows installation guide](docs/INSTALLATION.md). It shows
+where to copy the VST3 file, how to handle the unsigned plug-in warning, and
+how to make Ableton scan for the plug-in.
 
-Download the latest ready-made plug-in from
-[GitHub Releases](https://github.com/nijatburjiyev/spectral-relief/releases):
+For a deeper manual test, use the
+[Ableton smoke-test guide](docs/testing/ableton-smoke-test.md).
 
-- **macOS universal** — native Apple Silicon and Intel support.
-- **Windows x64** — for 64-bit Ableton Live and other VST3 hosts.
+## Build from source
 
-No compiler or JUCE installation is required. The macOS alpha is ad-hoc signed
-only—not Developer ID signed or notarized—and the Windows alpha is not
-Authenticode signed. macOS therefore requires a one-time quarantine-removal
-step. Follow the [macOS and Windows installation guide](docs/INSTALLATION.md).
+You do not need to build the project if you downloaded a release. This section
+is for developers who want to study or change the source code.
 
-## Requirements for building from source
+You need:
 
 - macOS or 64-bit Windows
-- Apple Command Line Tools
 - CMake 3.25 or newer
 - Git
-- A VST3-compatible host such as Ableton Live
+- Xcode Command Line Tools on macOS, or Visual Studio 2022 with
+  **Desktop development with C++** on Windows
 
-Install CMake with Homebrew if needed:
+JUCE 8.0.15 is downloaded automatically from its pinned commit.
 
-```bash
-brew install cmake
-```
-
-On Windows, use Visual Studio 2022 with the **Desktop development with C++**
-workload instead of Apple Command Line Tools.
-
-## Build and test on macOS
-
-JUCE 8.0.15 is fetched automatically at its pinned commit.
+Example for macOS:
 
 ```bash
 cmake -S . -B build-release \
@@ -90,65 +102,51 @@ cmake --build build-release --target SpectralReliefTests SpectralRelief_VST3 -j4
 ctest --test-dir build-release --output-on-failure
 ```
 
-The resulting plug-in bundle is located at:
+The built plug-in will be here:
 
 ```text
 build-release/SpectralRelief_artefacts/Release/VST3/Spectral Relief.vst3
 ```
 
-## Install in Ableton Live
+## How it works
 
-Use the ready-made release and follow
-[docs/INSTALLATION.md](docs/INSTALLATION.md). It covers both operating systems,
-the unsigned macOS security step, checksum verification, and Ableton rescanning.
+The plug-in copies a small analysis feed while the original audio continues
+unchanged. A background worker calculates the spectrum. The renderer keeps a
+fixed-size history for the 2D and 3D views.
 
-For a thorough manual check, follow the
-[Ableton smoke test](docs/testing/ableton-smoke-test.md).
-
-## Architecture
-
-The audio callback passes samples through unchanged and copies a bounded mono
-analysis feed into a preallocated 256 KiB single-producer/single-consumer
-queue. A low-priority worker owns three preallocated FFT analyzers and fixed
-1024-band averaging state. It publishes fixed-capacity frames to an eight-slot
-lock-free queue. The renderer retains one active mesh and one 512 KiB circular
-half-float history texture.
-
-Queue overflow drops visualization samples instead of blocking the audio
-thread. Averaging operates on calibrated linear power before display
-normalization; smoothing is a separate display-only stage.
+The audio thread never waits for the visualization. If the display cannot keep
+up, Spectral Relief drops visual samples instead of interrupting the sound.
 
 ## Inspiration and acknowledgements
 
-The visual language and several performance principles were inspired by
+The visual style and some performance ideas were inspired by
 [Chrome Music Lab's Spectrogram](https://github.com/googlecreativelab/chrome-music-lab/tree/master/spectrogram),
-developed by Google Creative Lab. In particular, its GPU-displaced surface,
-rolling texture, and bright spectral ridges helped shape the direction of this
-project.
+developed by Google Creative Lab. Its moving GPU surface, rolling texture, and
+bright frequency lines helped guide this project.
 
-Spectral Relief is an original C++/JUCE/OpenGL implementation. It does not
-include or port Chrome Music Lab source code, is not an official Google
-product, and is not affiliated with or endorsed by Google.
+Spectral Relief is an original C++ project made with JUCE and OpenGL. It does
+not include or port Chrome Music Lab source code. It is not an official Google
+product and is not connected with or endorsed by Google.
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for framework and reference
 licenses.
 
 ## Contributing
 
-Bug reports and focused pull requests are welcome. Read
-[CONTRIBUTING.md](CONTRIBUTING.md) before submitting a change. Security issues
-should follow [SECURITY.md](SECURITY.md).
+Contributions, bug reports, and focused pull requests are welcome. Please read
+[CONTRIBUTING.md](CONTRIBUTING.md) before making a pull request. Report security
+problems using [SECURITY.md](SECURITY.md).
 
 ## License
 
 Copyright © 2026 Nijat Burjiyev.
 
-Spectral Relief is licensed under the
-[GNU Affero General Public License v3.0 only](LICENSE) (`AGPL-3.0-only`). This
-license is used because the project links against JUCE under JUCE's AGPLv3
-open-source option. A commercial JUCE license would be required for a
-closed-source distribution.
+Spectral Relief is public, open-source software licensed under the
+[GNU Affero General Public License v3.0 only](LICENSE) (`AGPL-3.0-only`).
 
-Apple has deprecated OpenGL. It remains the renderer for this early version
-because JUCE provides a compact cross-host integration; the analyzer and queue
-boundaries are intentionally independent of the rendering backend.
+The project uses JUCE under JUCE's AGPLv3 open-source option. A commercial JUCE
+license is required if somebody wants to distribute a closed-source version.
+
+Apple has deprecated OpenGL. This early version still uses it because JUCE
+provides a compact way to support plug-in hosts. The audio analysis code is
+kept separate so the renderer can be replaced later.
