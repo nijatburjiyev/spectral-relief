@@ -197,9 +197,8 @@ public:
             lowTone.setSample (0, sample, value);
             lowTone.setSample (1, sample, value);
         }
-        worker->capture (lowTone);
-        SpectrumFrame ultraFrame;
-        expect (waitForFrame (frames, ultraFrame, 1024));
+        const auto ultraFrame = captureLatest (*worker, frames, lowTone, 1024);
+        expect (ultraFrame.bandCount > 0);
         expectEquals (ultraFrame.bandCount, static_cast<std::uint16_t> (1024));
         const auto expected100Hz = static_cast<int> (
             std::log (100.0 / 20.0) / std::log (500.0 / 20.0) * 1024.0);

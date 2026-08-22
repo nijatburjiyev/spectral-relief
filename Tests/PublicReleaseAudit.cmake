@@ -20,9 +20,14 @@ function(require_text relative_path expected_text)
     endif()
 endfunction()
 
-function(require_absent relative_path)
-    if (EXISTS "${REPOSITORY_ROOT}/${relative_path}")
-        message(FATAL_ERROR "Private or internal path remains in repository: ${relative_path}")
+function(require_untracked relative_path)
+    execute_process(
+        COMMAND git -C "${REPOSITORY_ROOT}" ls-files --error-unmatch -- "${relative_path}"
+        RESULT_VARIABLE tracked_result
+        OUTPUT_QUIET
+        ERROR_QUIET)
+    if (tracked_result EQUAL 0)
+        message(FATAL_ERROR "Private or internal path is tracked by Git: ${relative_path}")
     endif()
 endfunction()
 
@@ -62,8 +67,8 @@ require_text("docs/INSTALLATION.md" "C:\\Program Files\\Common Files\\VST3")
 require_text("README.md" "macOS and Windows")
 require_text("README.md" "GitHub Releases")
 
-require_absent("docs/superpowers")
-require_absent("docs/*.pdf")
-require_absent("tmp")
+require_untracked("docs/superpowers")
+require_untracked("docs/*.pdf")
+require_untracked("tmp")
 
 message(STATUS "Public release audit passed")
