@@ -115,6 +115,11 @@ add_test(
         -DTEST_ROOT=${CMAKE_CURRENT_BINARY_DIR}/package-release-test
         -P ${CMAKE_CURRENT_SOURCE_DIR}/Tests/PackageReleaseTest.cmake)
 add_test(
+    NAME ReleaseVersionTest
+    COMMAND ${CMAKE_COMMAND}
+        -DREPOSITORY_ROOT=${CMAKE_CURRENT_SOURCE_DIR}
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/Tests/ReleaseVersionTest.cmake)
+add_test(
     NAME PublicReleaseAudit
     COMMAND ${CMAKE_COMMAND}
         -DREPOSITORY_ROOT=${CMAKE_CURRENT_SOURCE_DIR}

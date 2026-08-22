@@ -51,14 +51,15 @@ Every control affects visualization only.
 ## Download
 
 Download the latest ready-made plug-in from
-[GitHub Releases](https://github.com/nijatburjiyev/spectral-relief/releases/latest):
+[GitHub Releases](https://github.com/nijatburjiyev/spectral-relief/releases):
 
 - **macOS universal** — native Apple Silicon and Intel support.
 - **Windows x64** — for 64-bit Ableton Live and other VST3 hosts.
 
-No compiler or JUCE installation is required. These early binaries are not
-code-signed or notarized, so macOS requires a one-time quarantine-removal step.
-Follow the [macOS and Windows installation guide](docs/INSTALLATION.md).
+No compiler or JUCE installation is required. The macOS alpha is ad-hoc signed
+only—not Developer ID signed or notarized—and the Windows alpha is not
+Authenticode signed. macOS therefore requires a one-time quarantine-removal
+step. Follow the [macOS and Windows installation guide](docs/INSTALLATION.md).
 
 ## Requirements for building from source
 

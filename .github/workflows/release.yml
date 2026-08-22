@@ -34,6 +34,13 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Validate release tag
+        if: github.event_name == 'push'
+        env:
+          SR_REPOSITORY_ROOT: ${{ github.workspace }}
+          SR_RELEASE_TAG: ${{ github.ref_name }}
+        run: cmake -P cmake/ValidateReleaseVersion.cmake
+
       - name: Configure macOS universal
         if: runner.os == 'macOS'
         run: >-
@@ -57,19 +64,19 @@ jobs:
       - name: Verify universal macOS binary
         if: runner.os == 'macOS'
         run: >-
-          lipo -info
+          lipo
           "build/SpectralRelief_artefacts/Release/VST3/Spectral Relief.vst3/Contents/MacOS/Spectral Relief"
+          -verify_arch arm64 x86_64
 
       - name: Package release archive
-        run: >-
-          cmake
-          "-DREPOSITORY_ROOT=${{ github.workspace }}"
-          "-DPLUGIN_DIR=${{ github.workspace }}/build/SpectralRelief_artefacts/Release/VST3/Spectral Relief.vst3"
-          "-DINSTALLATION_FILE=${{ github.workspace }}/docs/INSTALLATION.md"
-          "-DOUTPUT_FILE=${{ runner.temp }}/Spectral-Relief-${{ env.PACKAGE_VERSION }}-${{ matrix.platform }}.zip"
-          "-DPACKAGE_VERSION=${{ env.PACKAGE_VERSION }}"
-          "-DPLATFORM_LABEL=${{ matrix.platform }}"
-          -P "${{ github.workspace }}/cmake/PackageRelease.cmake"
+        env:
+          SR_REPOSITORY_ROOT: ${{ github.workspace }}
+          SR_PLUGIN_DIR: ${{ github.workspace }}/build/SpectralRelief_artefacts/Release/VST3/Spectral Relief.vst3
+          SR_INSTALLATION_FILE: ${{ github.workspace }}/docs/INSTALLATION.md
+          SR_OUTPUT_DIRECTORY: ${{ runner.temp }}
+          SR_PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+          SR_PLATFORM_LABEL: ${{ matrix.platform }}
+        run: cmake -P cmake/PackageReleaseFromEnvironment.cmake
 
       - name: Upload release archive
         uses: actions/upload-artifact@v4
@@ -81,7 +88,7 @@ jobs:
 
   publish:
     name: Publish GitHub Release
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 10

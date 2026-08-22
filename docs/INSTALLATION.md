@@ -1,13 +1,13 @@
 # Install Spectral Relief
 
 Ready-made VST3 packages are available on the
-[Spectral Relief releases page](https://github.com/nijatburjiyev/spectral-relief/releases/latest).
+[Spectral Relief releases page](https://github.com/nijatburjiyev/spectral-relief/releases).
 You do not need CMake, JUCE, or a compiler to use them.
 
-> **Unsigned alpha:** The current packages are free and open source, but they
-> are not signed with an Apple Developer ID or a Windows code-signing
-> certificate. Download only from the official repository above and verify the
-> checksum when possible.
+> **Unsigned alpha:** The macOS package is ad-hoc signed only—not Developer ID
+> signed or notarized—and the Windows package is not Authenticode signed.
+> Download only from the official repository above and verify the checksum when
+> possible.
 
 ## macOS — Apple Silicon and Intel
 
@@ -80,7 +80,7 @@ Quit Ableton before replacing the bundle. To uninstall, remove only
 - Confirm VST3 system folders are enabled in Ableton.
 - Perform a deep rescan with **Option/Alt + Rescan**.
 - Check the live diagnostics described in the
-  [Ableton smoke test](testing/ableton-smoke-test.md).
+  [Ableton smoke test](https://github.com/nijatburjiyev/spectral-relief/blob/main/docs/testing/ableton-smoke-test.md).
 - Report reproducible problems through
   [GitHub Issues](https://github.com/nijatburjiyev/spectral-relief/issues).
 

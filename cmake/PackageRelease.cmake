@@ -67,7 +67,11 @@ file(WRITE "${package_directory}/SOURCE.md"
 file(MAKE_DIRECTORY "${output_directory}")
 file(REMOVE "${OUTPUT_FILE}")
 execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar cf "${OUTPUT_FILE}" --format=zip -- "${package_name}"
+    COMMAND ${CMAKE_COMMAND}
+        "-DSTAGING_ROOT=${staging_root}"
+        "-DPACKAGE_NAME=${package_name}"
+        "-DOUTPUT_FILE=${OUTPUT_FILE}"
+        -P "${CMAKE_CURRENT_LIST_DIR}/CreateArchive.cmake"
     WORKING_DIRECTORY "${staging_root}"
     RESULT_VARIABLE archive_result
     OUTPUT_VARIABLE archive_stdout
