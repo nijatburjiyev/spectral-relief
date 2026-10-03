@@ -16,9 +16,10 @@ public:
         int repaintRequests = 0;
         RenderRepaintDriver driver ([&repaintRequests] { ++repaintRequests; });
         driver.start (60);
-        for (int tick = 0; tick < 4; ++tick)
+        const auto deadline = juce::Time::getMillisecondCounterHiRes() + 1000.0;
+        while (repaintRequests < 3 && juce::Time::getMillisecondCounterHiRes() < deadline)
         {
-            juce::Thread::sleep (25);
+            juce::Thread::sleep (10);
             juce::Timer::callPendingTimersSynchronously();
         }
         driver.stop();
